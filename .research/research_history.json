@@ -6,5 +6,73 @@
     "learning rate optimization",
     "AdamW warmup",
     "elementary math reasoning"
+  ],
+  "research_study_list": [
+    {
+      "title": "QLoRA: Efficient Finetuning of Quantized LLMs"
+    },
+    {
+      "title": "QA-LoRA: Quantization-Aware Low-Rank Adaptation of Large Language Models"
+    },
+    {
+      "title": "QuanTA: Efficient High-Rank Fine-Tuning of LLMs with Quantum-Informed Tensor Adaptation"
+    },
+    {
+      "title": "Evaluating Quantized Large Language Models"
+    },
+    {
+      "title": "MetaMath: Bootstrap Your Own Mathematical Questions for Large Language Models"
+    },
+    {
+      "title": "OpenMathInstruct-1: A 1.8 Million Math Instruction Tuning Dataset"
+    },
+    {
+      "title": "A Careful Examination of Large Language Model Performance on Grade School Arithmetic"
+    },
+    {
+      "title": "Training Chain-of-Thought via Latent-Variable Inference"
+    },
+    {
+      "title": "AutoLRS: Automatic Learning-Rate Schedule by Bayesian Optimization on the Fly"
+    },
+    {
+      "title": "Reverse engineering learned optimizers reveals known and novel mechanisms"
+    },
+    {
+      "title": "Mechanic: A Learning Rate Tuner"
+    },
+    {
+      "title": "MoMo: Momentum Models for Adaptive Learning Rates"
+    },
+    {
+      "title": "Where Do Large Learning Rates Lead Us?"
+    },
+    {
+      "title": "Why Warmup the Learning Rate? Underlying Mechanisms and Improvements"
+    },
+    {
+      "title": "On the Variance of the Adaptive Learning Rate and Beyond"
+    },
+    {
+      "title": "Analyzing & Reducing the Need for Learning Rate Warmup in GPT Training"
+    },
+    {
+      "title": "Implicit Bias of AdamW: $\\ell_\\infty$-Norm Constrained Optimization"
+    },
+    {
+      "title": "When Will Gradient Regularization Be Harmful?"
+    },
+    {
+      "title": "Specializing Smaller Language Models towards Multi-Step Reasoning"
+    },
+    {
+      "title": "Evaluating Large Vision-and-Language Models on Children's Mathematical Olympiads"
+    },
+    {
+      "title": "Solving Challenging Math Word Problems Using GPT-4 Code Interpreter with Code-based Self-Verification"
+    },
+    {
+      "title": "LIME: Learning Inductive Bias for Primitives of Mathematical Reasoning"
+    }
   ]
 }
