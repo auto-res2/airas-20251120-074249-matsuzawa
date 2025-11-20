@@ -9,70 +9,136 @@
   ],
   "research_study_list": [
     {
-      "title": "QLoRA: Efficient Finetuning of Quantized LLMs"
+      "title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+      "meta_data": {
+        "arxiv_id": "2305.14314"
+      }
     },
     {
-      "title": "QA-LoRA: Quantization-Aware Low-Rank Adaptation of Large Language Models"
+      "title": "QA-LoRA: Quantization-Aware Low-Rank Adaptation of Large Language Models",
+      "meta_data": {
+        "arxiv_id": "2309.14717"
+      }
     },
     {
-      "title": "QuanTA: Efficient High-Rank Fine-Tuning of LLMs with Quantum-Informed Tensor Adaptation"
+      "title": "QuanTA: Efficient High-Rank Fine-Tuning of LLMs with Quantum-Informed Tensor Adaptation",
+      "meta_data": {
+        "arxiv_id": "2406.00132"
+      }
     },
     {
-      "title": "Evaluating Quantized Large Language Models"
+      "title": "Evaluating Quantized Large Language Models",
+      "meta_data": {
+        "arxiv_id": "2402.18158"
+      }
     },
     {
-      "title": "MetaMath: Bootstrap Your Own Mathematical Questions for Large Language Models"
+      "title": "MetaMath: Bootstrap Your Own Mathematical Questions for Large Language Models",
+      "meta_data": {
+        "arxiv_id": "2309.12284"
+      }
     },
     {
-      "title": "OpenMathInstruct-1: A 1.8 Million Math Instruction Tuning Dataset"
+      "title": "OpenMathInstruct-1: A 1.8 Million Math Instruction Tuning Dataset",
+      "meta_data": {
+        "arxiv_id": "2402.10176"
+      }
     },
     {
-      "title": "A Careful Examination of Large Language Model Performance on Grade School Arithmetic"
+      "title": "A Careful Examination of Large Language Model Performance on Grade School Arithmetic",
+      "meta_data": {
+        "arxiv_id": "2405.00332"
+      }
     },
     {
-      "title": "Training Chain-of-Thought via Latent-Variable Inference"
+      "title": "Training Chain-of-Thought via Latent-Variable Inference",
+      "meta_data": {
+        "arxiv_id": "2312.02179"
+      }
     },
     {
-      "title": "AutoLRS: Automatic Learning-Rate Schedule by Bayesian Optimization on the Fly"
+      "title": "AutoLRS: Automatic Learning-Rate Schedule by Bayesian Optimization on the Fly",
+      "meta_data": {
+        "arxiv_id": "2105.10762"
+      }
     },
     {
-      "title": "Reverse engineering learned optimizers reveals known and novel mechanisms"
+      "title": "Reverse engineering learned optimizers reveals known and novel mechanisms",
+      "meta_data": {
+        "arxiv_id": "2011.02159"
+      }
     },
     {
-      "title": "Mechanic: A Learning Rate Tuner"
+      "title": "Mechanic: A Learning Rate Tuner",
+      "meta_data": {
+        "arxiv_id": "2306.00144"
+      }
     },
     {
-      "title": "MoMo: Momentum Models for Adaptive Learning Rates"
+      "title": "MoMo: Momentum Models for Adaptive Learning Rates",
+      "meta_data": {
+        "arxiv_id": "2305.07583"
+      }
     },
     {
-      "title": "Where Do Large Learning Rates Lead Us?"
+      "title": "Where Do Large Learning Rates Lead Us?",
+      "meta_data": {
+        "arxiv_id": "2410.22113"
+      }
     },
     {
-      "title": "Why Warmup the Learning Rate? Underlying Mechanisms and Improvements"
+      "title": "Why Warmup the Learning Rate? Underlying Mechanisms and Improvements",
+      "meta_data": {
+        "arxiv_id": "2406.09405"
+      }
     },
     {
-      "title": "On the Variance of the Adaptive Learning Rate and Beyond"
+      "title": "On the Variance of the Adaptive Learning Rate and Beyond",
+      "meta_data": {
+        "arxiv_id": "1908.03265"
+      }
     },
     {
-      "title": "Analyzing & Reducing the Need for Learning Rate Warmup in GPT Training"
+      "title": "Analyzing & Reducing the Need for Learning Rate Warmup in GPT Training",
+      "meta_data": {
+        "arxiv_id": "2410.23922"
+      }
     },
     {
-      "title": "Implicit Bias of AdamW: $\\ell_\\infty$-Norm Constrained Optimization"
+      "title": "Implicit Bias of AdamW: $\\ell_\\infty$-Norm Constrained Optimization",
+      "meta_data": {
+        "arxiv_id": "2404.04454"
+      }
     },
     {
-      "title": "When Will Gradient Regularization Be Harmful?"
+      "title": "When Will Gradient Regularization Be Harmful?",
+      "meta_data": {
+        "arxiv_id": "2406.09723"
+      }
     },
     {
-      "title": "Specializing Smaller Language Models towards Multi-Step Reasoning"
+      "title": "Specializing Smaller Language Models towards Multi-Step Reasoning",
+      "meta_data": {
+        "arxiv_id": "2301.12726"
+      }
     },
     {
-      "title": "Evaluating Large Vision-and-Language Models on Children's Mathematical Olympiads"
+      "title": "Evaluating Large Vision-and-Language Models on Children's Mathematical Olympiads",
+      "meta_data": {
+        "arxiv_id": "2406.15736"
+      }
     },
     {
-      "title": "Solving Challenging Math Word Problems Using GPT-4 Code Interpreter with Code-based Self-Verification"
+      "title": "Solving Challenging Math Word Problems Using GPT-4 Code Interpreter with Code-based Self-Verification",
+      "meta_data": {
+        "arxiv_id": "2308.07921"
+      }
     },
     {
-      "title": "LIME: Learning Inductive Bias for Primitives of Mathematical Reasoning"
+      "title": "LIME: Learning Inductive Bias for Primitives of Mathematical Reasoning",
+      "meta_data": {
+        "arxiv_id": "2101.06223"
+      }
     }
   ]
 }
