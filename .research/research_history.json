@@ -258,7 +258,78 @@
     "iterations": [
       {
         "iteration_id": 1,
-        "method": "Gradient-Noise Aware Rank & Update Modulator (GNARUM)\\nCore idea: jointly control a layer’s (i) update *frequency* f_ℓ∈{1/K, …,1} and (ii) effective LoRA *rank* r_ℓ≤r₀ so that its *utility-to-cost* score κ_ℓ = η_ℓ·√(B·f_ℓ) /(𝔊_ℓ·r_ℓ) ≈ κ⋆. Lower f_ℓ or r_ℓ when κ_ℓ≪κ⋆ (noise-dominated), and raise them when κ_ℓ≫κ⋆.\\nAlgorithm (per gradient-accum cycle):\\n1. Measure per-layer gradient-noise scale 𝔊_ℓ as in LaGNAS.\\n2. Compute provisional LR η̂_ℓ from LaGNAS controller.\\n3. Update *frequency gate*: if κ_ℓ<θ_low for τ cycles ⇒ set f_ℓ←max(f_ℓ/2,1/8); if κ_ℓ>θ_high ⇒ f_ℓ←min(2f_ℓ,1). Layers whose current step is not an update step skip backward.\\n4. Every M cycles (e.g. once per epoch) run a cheap rank-adaptation step on layers with f_ℓ<1: \\n   a. Perform SVD on the current  r_ℓ×d  LoRA matrix W_ℓ=UΣVᵀ.\\n   b. Estimate directional importance I_i = σ_i·‖ḡ_{ℓ,i}‖ where σ_i is the i-th singular value and ḡ_{ℓ,i} the mean gradient projected onto U_i.\\n   c. Drop the bottom p% directions whose I_i<ϕ·median(I) (defaults p=25, ϕ=0.5).  Set new rank r_ℓ accordingly.\\n   d. If later κ_ℓ>θ_high and r_ℓ<r₀, regrow capacity by re-initialising +1 singular pair from a random orthogonal basis.\\n5. Forward pass always uses the *current* low-rank factors; thus inference cost shrinks with r_ℓ.\\nOverhead: SVD on rank-≤16 matrices is <0.1 ms per layer; frequency gating is <1 ms total. Implementation adds ~90 LOC and no external libraries."
+        "method": "Gradient-Noise Aware Rank & Update Modulator (GNARUM)\\nCore idea: jointly control a layer’s (i) update *frequency* f_ℓ∈{1/K, …,1} and (ii) effective LoRA *rank* r_ℓ≤r₀ so that its *utility-to-cost* score κ_ℓ = η_ℓ·√(B·f_ℓ) /(𝔊_ℓ·r_ℓ) ≈ κ⋆. Lower f_ℓ or r_ℓ when κ_ℓ≪κ⋆ (noise-dominated), and raise them when κ_ℓ≫κ⋆.\\nAlgorithm (per gradient-accum cycle):\\n1. Measure per-layer gradient-noise scale 𝔊_ℓ as in LaGNAS.\\n2. Compute provisional LR η̂_ℓ from LaGNAS controller.\\n3. Update *frequency gate*: if κ_ℓ<θ_low for τ cycles ⇒ set f_ℓ←max(f_ℓ/2,1/8); if κ_ℓ>θ_high ⇒ f_ℓ←min(2f_ℓ,1). Layers whose current step is not an update step skip backward.\\n4. Every M cycles (e.g. once per epoch) run a cheap rank-adaptation step on layers with f_ℓ<1: \\n   a. Perform SVD on the current  r_ℓ×d  LoRA matrix W_ℓ=UΣVᵀ.\\n   b. Estimate directional importance I_i = σ_i·‖ḡ_{ℓ,i}‖ where σ_i is the i-th singular value and ḡ_{ℓ,i} the mean gradient projected onto U_i.\\n   c. Drop the bottom p% directions whose I_i<ϕ·median(I) (defaults p=25, ϕ=0.5).  Set new rank r_ℓ accordingly.\\n   d. If later κ_ℓ>θ_high and r_ℓ<r₀, regrow capacity by re-initialising +1 singular pair from a random orthogonal basis.\\n5. Forward pass always uses the *current* low-rank factors; thus inference cost shrinks with r_ℓ.\\nOverhead: SVD on rank-≤16 matrices is <0.1 ms per layer; frequency gating is <1 ms total. Implementation adds ~90 LOC and no external libraries.",
+        "experimental_design": {
+          "experiment_summary": "Task: Fine-tune a 0.6-billion-parameter language model on the GSM8K mathematical-reasoning corpus so that it can generate the single final numeric answer to a grade-school word problem.\nGoal: Demonstrate that the proposed Gradient-Noise Aware Rank & Update Modulator (GNARUM) for LoRA adapters achieves higher solution accuracy while simultaneously lowering both training energy and inference compute compared with a strong baseline (LaGNAS + NACUS).\nWorkflow:\n1. Load Qwen3-0.6B with LoRA adapters initial rank r₀ = 16 for every attention and MLP projection.\n2. Train for three epochs with AdamW and gradient accumulation (global batch 64).\n3. During every accumulation cycle GNARUM decides, per layer, whether to:\n   a) compute/propagate gradients this step (frequency gate f_ℓ) and\n   b) adjust the current effective LoRA rank r_ℓ by low-overhead SVD pruning or regrowth.\n   These decisions maintain a target utility-to-cost score κ⋆ derived from gradient-noise scale 𝔊_ℓ.\n4. Record electricity consumption via nvidia-smi –query-gpu=power.draw and integrate over time until the model reaches 55 % exact-match; store this as Joules-to-55 % EM.\n5. After training, measure: a) dev set exact-match, b) remaining LoRA parameters and per-token FLOPs for a forward pass, c) energy metric above.\n6. Repeat the entire procedure for three random seeds and report mean ± s.e.m.\nThe experiment therefore isolates the effect of GNARUM’s dynamic update frequency and rank pruning on both quality and efficiency.",
+          "evaluation_metrics": [
+            {
+              "name": "GSM8K dev exact-match",
+              "description": "Correctness criteria: a prediction is correct iff, after stripping whitespace and trailing punctuation, it exactly equals the gold numeric answer string provided in the GSM8K dev set. Calculation: ExactMatch = (1/N)·Σ_i 𝟙[ŷ_i = y_i]. Suitability: GSM8K problems have a single unambiguous final answer, so exact match directly reflects mathematical correctness. Visualisation: plot learning curve of EM vs. training step and a bar chart of per-method final EM."
+            },
+            {
+              "name": "Joules-to-55 % EM",
+              "description": "Correctness criteria: N/A (efficiency metric). Calculation: integrate instantaneous power P(t) (watts) reported by nvidia-smi over time from training start until the first step at which running dev EM ≥ 55 %. Numerically, Joules = Σ_k P_k·Δt_k with 1 s polling. Suitability: jointly captures computational and time efficiency, rewarding methods that reach practical accuracy thresholds with less energy. Visualisation: scatter plot of final EM vs. Joules-to-55 % for each random seed."
+            },
+            {
+              "name": "Inference FLOPs & parameter count after training",
+              "description": "Correctness criteria: N/A. Calculation: 1) FLOPs: sum over layers of 2·d·r_ℓ per LoRA projection (multiply-accumulate counted as 2 FLOPs) plus unchanged main-model FLOPs; divide by baseline FLOPs with full rank r₀ for normalisation. 2) Parameter count: sum of all trainable LoRA parameters after pruning. Suitability: quantifies real deployment cost reductions delivered by GNARUM. Visualisation: stacked bar chart comparing baseline vs. GNARUM FLOPs and parameter totals."
+            },
+            {
+              "name": "1. GSM8K dev exact-match.\\n2. Joules-to-55 % EM (from NVIDIA-Smi).\\n3. Inference FLOPs & parameter count after training.",
+              "description": "Primary metric as specified in hypothesis: 1. GSM8K dev exact-match.\\n2. Joules-to-55 % EM (from NVIDIA-Smi).\\n3. Inference FLOPs & parameter count after training."
+            }
+          ],
+          "proposed_method": "Gradient-Noise Aware Rank & Update Modulator (GNARUM)\nObjective: minimise training energy and inference compute of LoRA fine-tuning without hurting accuracy by dynamically skipping backward passes and shrinking adapter rank when gradient signal is weak.\nKey components:\n1. Layer-wise gradient-noise estimator 𝔊_ℓ using inter-micro-batch variance (as in LaGNAS).\n2. Utility-to-cost score κ_ℓ = η̂_ℓ·√(B·f_ℓ)/(𝔊_ℓ·r_ℓ) where η̂_ℓ is the provisional per-layer learning rate from LaGNAS, f_ℓ the update frequency (1 executes every step), r_ℓ the current LoRA rank, and B the global batch size.\n3. Frequency gate: if κ_ℓ stays below θ_low for τ cycles, halve f_ℓ down to 1/8; if above θ_high, double f_ℓ up to 1. Layers not scheduled skip gradient computation this step, saving memory and compute.\n4. Rank adaptation (once per epoch for layers with f_ℓ<1): perform SVD on the r_ℓ×d LoRA matrix, score each direction i by I_i = σ_i·‖ḡ_{ℓ,i}‖, prune bottom p % below ϕ·median(I), and optionally regrow one new rank-1 direction later if κ_ℓ rises.\n5. Forward pass always uses the current low-rank factors, so inference cost follows r_ℓ.\nAlgorithmic procedure is ~90 lines of PyTorch added on top of standard LoRA/LaGNAS code and requires only <1 ms overhead per accumulation step on an A100.",
+          "comparative_methods": [
+            "LaGNAS+NACUS"
+          ],
+          "models_to_use": [
+            "Qwen3-0.6B"
+          ],
+          "datasets_to_use": [
+            "gsm8k"
+          ],
+          "hyperparameters_to_search": [
+            {
+              "name": "learning_rate",
+              "range": "1e-4-5e-4"
+            },
+            {
+              "name": "theta_low",
+              "range": "0.7-0.9"
+            },
+            {
+              "name": "theta_high",
+              "range": "1.1-1.4"
+            },
+            {
+              "name": "p_prune",
+              "range": "15,25,35"
+            },
+            {
+              "name": "batch_size",
+              "range": "32,64,96"
+            },
+            {
+              "name": "weight_decay",
+              "range": "0.0-0.05"
+            }
+          ]
+        },
+        "experiment_runs": [
+          {
+            "run_id": "proposed-iter1-Qwen3-0.6B-gsm8k",
+            "method_name": "proposed",
+            "model_name": "Qwen3-0.6B",
+            "dataset_name": "gsm8k"
+          },
+          {
+            "run_id": "comparative-1-iter1-Qwen3-0.6B-gsm8k",
+            "method_name": "comparative-1",
+            "model_name": "Qwen3-0.6B",
+            "dataset_name": "gsm8k"
+          }
+        ]
       }
     ]
   }
