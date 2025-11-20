@@ -1,0 +1,76 @@
+run_id: proposed-iter1-Qwen3-0.6B-gsm8k
+method: gnarum
+model:
+  base_model: Qwen3-0.6B
+  precision: bf16
+  lora:
+    r0: 16          # initial LoRA rank
+    alpha: 32
+    dropout: 0.05
+    target_modules: ["c_attn", "c_proj", "w1", "w2"]
+dataset:
+  name: gsm8k
+  config: main
+  text_column: question
+  label_column: answer
+  max_length: 1024
+  train_split: train
+  eval_split: test
+  num_workers: 8
+training:
+  epochs: 3
+  micro_batch_size: 8            # fits comfortably in 80-GB A100
+  gradient_accumulation_steps: 8 # global B = 64
+  effective_batch_size: 64
+  learning_rate: 3e-4            # will be tuned by Optuna
+  optimizer: adamw
+  betas: [0.9, 0.98]
+  weight_decay: 0.01
+  scheduler: cosine
+  warmup_steps: 200
+  max_grad_norm: 1.0
+  seed: 42
+gnarum:             # method-specific controller hyper-params
+  theta_low: 0.8
+  theta_high: 1.2
+  tau: 100                   # patience (gradient-accum cycles)
+  f_init: 1.0                # start updating every step
+  f_min: 0.125               # lower bound (1/8)
+  svd_interval_epochs: 1     # run rank-adapt once per epoch
+  p_prune: 0.25              # drop lowest-importance 25 % directions
+  phi_median: 0.5            # importance threshold multiplier
+  kappa_target: 1.0
+  regrow: true
+logging:
+  eval_every_n_steps: 500
+  save_every_n_steps: 2000
+  output_dir: outputs/proposed_gnarum
+optuna:
+  n_trials: 40
+  direction: maximize          # higher dev EM is better
+  metric: dev_exact_match
+  pruning:
+    patience: 300
+  search_space:
+    learning_rate:
+      type: loguniform
+      low: 1e-4
+      high: 5e-4
+    theta_low:
+      type: uniform
+      low: 0.7
+      high: 0.9
+    theta_high:
+      type: uniform
+      low: 1.1
+      high: 1.4
+    p_prune:
+      type: categorical
+      choices: [0.15, 0.25, 0.35]
+    batch_size:
+      type: categorical
+      choices: [32, 64, 96]
+    weight_decay:
+      type: uniform
+      low: 0.0
+      high: 0.05

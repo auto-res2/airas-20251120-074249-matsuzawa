@@ -1,0 +1,76 @@
+# config/config.yaml – global Hydra defaults
+
+defaults:
+  - _self_
+
+run: null            # overridden from CLI – matches YAML in config/runs/
+mode: full           # full | trial
+results_dir: ./results
+
+wandb:
+  entity: gengaru617-personal
+  project: 2025-11-20
+  mode: online  # switched to "disabled" automatically in trial mode
+
+# generic model defaults -------------------------------------------------------
+model:
+  base_model: Qwen/Qwen3-0.6B
+  precision: bf16
+  lora:
+    r0: 16
+    alpha: 32
+    dropout: 0.05
+    target_modules: ["c_attn", "c_proj", "w1", "w2"]
+  nacus:
+    gate_threshold: 0.05
+
+dataset:
+  name: gsm8k
+  config: main
+  text_column: question
+  label_column: answer
+  max_length: 1024
+  train_split: train
+  eval_split: test
+  num_workers: 4
+
+training:
+  epochs: 3
+  micro_batch_size: 8
+  gradient_accumulation_steps: 8
+  effective_batch_size: 64
+  learning_rate: 3e-4
+  optimizer: adamw
+  betas: [0.9, 0.98]
+  weight_decay: 0.01
+  scheduler: cosine
+  warmup_steps: 200
+  max_grad_norm: 1.0
+  seed: 1
+
+logging:
+  eval_every_n_steps: 500
+  save_every_n_steps: 2000
+  output_dir: outputs/tmp
+
+gnarum:
+  theta_low: 0.8
+  theta_high: 1.2
+  tau: 100
+  f_init: 1.0
+  f_min: 0.125
+  svd_interval_epochs: 1
+  p_prune: 0.25
+  phi_median: 0.5
+  kappa_target: 1.0
+  regrow: true
+
+optuna:
+  n_trials: 0
+  direction: maximize
+  metric: dev_exact_match
+  pruning:
+    patience: 300
+  search_space: {}
+
+# Run-specific YAML from config/runs/*.yaml will be merged over these defaults.
